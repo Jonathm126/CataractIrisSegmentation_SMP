@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 
 # custom utils
-from helper_utils.display import plot_for_epoch
+from helper_utils.display import display_for_epoch
 
 class CatSegModel(pl.LightningModule):
     def __init__(self, config, **kwargs):
@@ -20,6 +20,8 @@ class CatSegModel(pl.LightningModule):
         
         # data
         self.config = config
+        if self.training:
+            self.save_hyperparameters(logger=False)
         
         # per - epoch logs
         self.train_outputs = []
@@ -53,7 +55,6 @@ class CatSegModel(pl.LightningModule):
         try:
             loss_fn_name = config.get('LOSS', 'DiceLoss')
             self.loss_fn = getattr(smp.losses, loss_fn_name)(smp.losses.BINARY_MODE)
-            #loss = smp.losses.DiceLoss(smp.losses.BINARY_MODE, from_logits=True)
         except: raise ValueError(f"Improper loss function defined.")
 
     def forward(self, image):
@@ -111,8 +112,8 @@ class CatSegModel(pl.LightningModule):
             f"{stage}_dataset_iou": dataset_iou,
             f"{stage}_dataset_loss": dataset_loss
         }
-        
-        self.log_dict(metrics, prog_bar=True, on_epoch=True)
+        if "stage" is not 'test':
+            self.log_dict(metrics, prog_bar=True, on_epoch=True, on_step=False, logger=True)
 
     def training_step(self, batch, batch_idx):
         result = self.shared_step(batch, "train")
@@ -127,6 +128,21 @@ class CatSegModel(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         result = self.shared_step(batch, "test")
         self.test_outputs.append(result)
+        
+        tp = result['tp'].to(self.device)
+        fp = result['fp'].to(self.device)
+        fn = result['fn'].to(self.device)
+        tn = result['tn'].to(self.device)
+                
+        per_image_iou = smp.metrics.iou_score(tp, fp, fn, tn)
+        
+        image_metrics = {
+            "test_image_loss": result["loss"].item(),
+            "test_image_iou": per_image_iou.item()
+        }
+        
+        self.log_dict(image_metrics, logger=True, on_epoch=False, on_step=True)
+        
         return result
 
     def on_train_epoch_end(self):
@@ -136,7 +152,7 @@ class CatSegModel(pl.LightningModule):
     def on_validation_epoch_end(self):
         self.shared_epoch_end(self.valid_outputs, "valid")
         self.valid_outputs.clear()
-        plot_for_epoch(self, self.trainer.val_dataloaders.dataset, sample_indices=[0], device=self.device)
+        display_for_epoch(self, self.trainer.val_dataloaders.dataset, sample_indices=[0], device=self.device)
 
     def on_test_epoch_end(self):
         self.shared_epoch_end(self.test_outputs, "test")
@@ -146,28 +162,4 @@ class CatSegModel(pl.LightningModule):
         #@TODO add scheduling
         lr = self.config.get('LR', 0.0001)
         return torch.optim.Adam(self.parameters(), lr=lr)
-
-def load_model(model_path):
-    checkpoint = torch.load(model_path)
-    model = CatSegModel(checkpoint['config'])
-    model.load_state_dict(checkpoint['model_state_dict'])
     
-    train_logs = checkpoint['train_logs']
-    valid_logs = checkpoint['valid_logs']
-    
-    return model, train_logs, valid_logs
-
-def save_model(model, train_logs, valid_logs):
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M')
-    model_name = f"{config['NAME']}_{timestamp}.pth"
-    model_path = os.path.join('models', 'models_cache', model_name)
-
-    save_data = {
-        'model_state_dict': model.state_dict(),
-        'config': model.config,
-        'train_logs': model.train_logs,
-        'valid_logs': model.valid_logs
-    }
-
-    torch.save(save_data, model_path)
-    return model_path

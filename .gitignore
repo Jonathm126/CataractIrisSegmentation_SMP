@@ -20,6 +20,14 @@ lightning_logs/
 venv/
 env/
 
+# problem with large model files
+logs/
+
 # Ignore system files
 .DS_Store
 Thumbs.db
+
+
+# junk
+todo.txt
+helper_utils/junkyard.py

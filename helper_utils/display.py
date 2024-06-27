@@ -1,5 +1,6 @@
 # utils
 import matplotlib.pyplot as plt
+import pandas as pd
 
 # torch
 import torch
@@ -7,12 +8,12 @@ from torchvision import utils
 import torchvision.transforms.functional as F
 
 
-def plot_sample(dataset, index):
+def display_sample(dataset, index):
     # Get a sample directly from the dataset
     image, mask = dataset[index]  
-    plot_mask(image, mask)
+    display_mask(image, mask)
 
-def plot_for_epoch(model, dataset, sample_indices, device):
+def display_for_epoch(model, dataset, sample_indices, device):
     "helper function to plot after one epoch"
     for index in sample_indices:
         image, true_mask = dataset[index]
@@ -28,10 +29,9 @@ def plot_for_epoch(model, dataset, sample_indices, device):
         predicted_mask = predicted_mask.cpu()
 
         # Plot the masks
-        plot_mask(image, true_mask, inferred_mask=predicted_mask, mode='overlay')
+        display_mask(image, true_mask, mask2=predicted_mask, mode='overlay')
     
-    
-def plot_mask(image, gt_mask, inferred_mask=None, mode='side_by_side'):
+def display_mask(image, mask1, mask2=None, mode='side_by_side'):
     """
     Helper function to plot an image, a mask, and optionally an inferred mask.
 
@@ -45,7 +45,6 @@ def plot_mask(image, gt_mask, inferred_mask=None, mode='side_by_side'):
 
     # Convert tensors to numpy arrays
     image_np = image.permute(1, 2, 0).cpu().numpy()
-    gt_mask_np = gt_mask.squeeze().cpu().numpy()
     
     plt.figure(figsize=(15, 5))
 
@@ -56,16 +55,16 @@ def plot_mask(image, gt_mask, inferred_mask=None, mode='side_by_side'):
         plt.axis('off')
 
         plt.subplot(1, 3, 2)
-        visualiz_gt = utils.draw_segmentation_masks(image, masks=gt_mask > 0.5, alpha=0.8, colors='green')
+        visualiz_gt = utils.draw_segmentation_masks(image, masks=mask1 > 0.5, alpha=0.8, colors='green')
         visualiz_gt_np = visualiz_gt.permute(1, 2, 0).cpu().numpy()
         plt.imshow(visualiz_gt_np)
         
         plt.title('Ground Truth Mask')
         plt.axis('off')
 
-        if inferred_mask is not None:
+        if mask2 is not None:
             plt.subplot(1, 3, 3)
-            visualiz_infer = utils.draw_segmentation_masks(image, masks=inferred_mask > 0.5, alpha=0.8, colors='red')
+            visualiz_infer = utils.draw_segmentation_masks(image, masks=mask2 > 0.5, alpha=0.8, colors='red')
             visualiz_infer_np = visualiz_infer.permute(1, 2, 0).cpu().numpy()
             plt.imshow(visualiz_infer_np)
             plt.title('Inferred Mask')
@@ -78,18 +77,41 @@ def plot_mask(image, gt_mask, inferred_mask=None, mode='side_by_side'):
         plt.axis('off')
 
         plt.subplot(1, 3, 2)
-        visualiz_gt = utils.draw_segmentation_masks(image, masks=gt_mask > 0.5, alpha=0.8, colors='green')
+        visualiz_gt = utils.draw_segmentation_masks(image, masks=mask1 > 0.5, alpha=0.8, colors='green')
         visualiz_gt_np = visualiz_gt.permute(1, 2, 0).cpu().numpy()
         plt.imshow(visualiz_gt_np)
         plt.title('Image with GT Mask')
         plt.axis('off')
 
-        if inferred_mask is not None:
+        if mask2 is not None:
             plt.subplot(1, 3, 3)
-            visualiz_infer = utils.draw_segmentation_masks(image, masks=inferred_mask > 0.5, alpha=0.8, colors='red')
+            visualiz_infer = utils.draw_segmentation_masks(image, masks=mask2 > 0.5, alpha=0.8, colors='red')
             visualiz_infer_np = visualiz_infer.permute(1, 2, 0).cpu().numpy()
             plt.imshow(visualiz_infer_np)
             plt.title('Image with Inferred Mask')
             plt.axis('off')
 
     plt.show()
+    
+def plot_losses(csv_path, metrics):
+    # Read the CSV file
+    df = pd.read_csv(csv_path)
+    # clean
+    df = df.groupby('step').first().reset_index()
+    df = df.astype('float16')
+    df = df.astype({'epoch': 'int8', 'step': 'int8'})
+    
+    # Plot all metrics
+    fig, axes = plt.subplots(1, len(metrics), figsize=(5 * len(metrics), 3))
+    
+    # Plot each metric in its own subplot
+    for idx, metric in enumerate(metrics):
+        ax = axes[idx]
+        ax.plot(df['step'], df[f'train_{metric}'], label=f'Training {metric}')
+        ax.plot(df['step'], df[f'valid_{metric}'], label=f'Validation {metric}')
+        ax.set_xlabel('Step')
+        ax.set_ylabel(metric.capitalize())
+        ax.set_title(f'Training and Validation {metric.capitalize()} Over Steps')
+        ax.legend()
+        ax.set_ylim(0, 1)
+        ax.grid(True)

@@ -4,12 +4,12 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import io
 from torchvision.tv_tensors import Mask, Image
 
+from torch.utils import data
 
 class SegmentationDataset(Dataset):
     "A class for image segmentation datasets."
     def __init__(self, root_dir):
         super().__init__()
-        
         # get images
         self.image_dir = os.path.join(root_dir, 'images')
         self.label_dir = os.path.join(root_dir, 'labels')
@@ -33,7 +33,7 @@ class SegmentationDataset(Dataset):
         lbl_path = self.label_paths[idx]
             
         img = Image(io.read_image(img_path))
-        lbl = Mask(io.read_image(lbl_path), )
+        lbl = Mask(io.read_image(lbl_path))
         
         if self.transform:
             img, lbl = self.transform(img, lbl)
@@ -43,6 +43,65 @@ class SegmentationDataset(Dataset):
         lbl = lbl.float() # Cast back to float, since x is a ByteTensor now
         
         return img, lbl
+
+class SegmentationInferenceDataset(Dataset):
+    # Dataset for inference (no labels)
+    def __init__(self, root,transform=None):
+        super().__init__()
+        # scan for images in the root directory
+        self.root = root
+        
+        # scan for images in the root
+        self.image_paths = []
+        for root, _, files in os.walk(self.root):
+            for file in files:
+                if file.endswith(('.png', '.jpg', '.jpeg', '.bmp')):
+                    self.image_paths.append(os.path.join(root, file))
+        
+        self.transform = transform
+        
+    def __len__(self):
+        return len(self.image_paths)
+    '''
+    def __getitem__(self, idx):
+        img_path = self.image_paths(idx)
+        img = Image(io.read_image(img_path))
+        
+        # split stereo image
+        _, _, w = img.shape
+        mid_point = w // 2
+        
+        left_img = img[:,:,:mid_point]
+        right_img = img[:,:,mid_point:]
+        
+        if self.transform:
+            left_img = self.transform(left_img)
+            right_img = self.transform(right_img)
+        
+        return left_img, right_img
+    '''
+    def __getitem__(self, idx):
+        stereo_idx = idx // 2  # Index of the stereo image
+        is_right = idx % 2     # Determine if it is left or right image
+
+        img_path = self.image_paths[stereo_idx]
+        
+        # Use torchvision to load the image
+        img = io.read_image(img_path).float() / 255.0  # Normalize to [0, 1]
+
+        # Calculate the middle point to split the stereo image
+        _, _, width = img.shape
+        mid_point = width // 2
+        
+        if is_right:
+            img = img[:, :, mid_point:]
+        else:
+            img = img[:, :, :mid_point]
+        
+        if self.transform:
+            img = self.transform(img)
+        
+        return img
 
 def build_dataloaders(train_dataset, valid_dataset, test_dataset):
     n_cpu = os.cpu_count()

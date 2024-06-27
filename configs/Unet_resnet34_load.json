@@ -1,0 +1,5 @@
+{
+    "NAME": "Unet_resnet34_pretrained_DiceLoss",
+    "MODE": "load",
+    "MODEL_PATH": "logs\\Unet_resnet34_pretrained_DiceLoss\\version_0"
+}

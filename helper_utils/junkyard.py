@@ -92,3 +92,43 @@ if config['MODE'] == 'load':
     print(f"Best model is saved at: {best_model_path}")
     
     return train_logs, valid_logs, best_model
+
+
+
+# Debug only
+
+subset_size = len(train_dataset) // 10
+indices = np.random.choice(len(train_dataset), subset_size, replace=False)
+train_subset = torch.utils.data.Subset(train_dataset, indices)
+
+subset_size = len(valid_dataset) // 10
+indices = np.random.choice(len(valid_dataset), subset_size, replace=False)
+valid_subset = torch.utils.data.Subset(valid_dataset, indices)
+
+train_dl = DataLoader(train_subset, batch_size=6, shuffle=True)
+valid_dl = DataLoader(valid_subset, batch_size=6, shuffle=True)
+
+def load_model(model_path):
+    checkpoint = torch.load(model_path)
+    model = CatSegModel(checkpoint['config'])
+    model.load_state_dict(checkpoint['model_state_dict'])
+    
+    train_logs = checkpoint['train_logs']
+    valid_logs = checkpoint['valid_logs']
+    
+    return model, train_logs, valid_logs
+
+def save_model(model, train_logs, valid_logs):
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M')
+    model_name = f"{config['NAME']}_{timestamp}.pth"
+    model_path = os.path.join('models', 'models_cache', model_name)
+
+    save_data = {
+        'model_state_dict': model.state_dict(),
+        'config': model.config,
+        'train_logs': model.train_logs,
+        'valid_logs': model.valid_logs
+    }
+
+    torch.save(save_data, model_path)
+    return model_path
