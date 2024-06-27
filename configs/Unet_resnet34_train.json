@@ -1,0 +1,19 @@
+{
+    "NAME": "Unet_resnet34_pretrained_DiceLoss",
+    "MODE": "train",
+    "NUM_EPOCHS": 10,
+
+    "CLASSES": ["pupil"],
+    "IN_CH": 3,
+
+    "ARCH": "Unet",
+    "ENCODER": "resnet34",
+    "ENCODER_WEIGHTS": "imagenet",
+    "LOSS": "DiceLoss",
+
+    "LR": 0.0001, 
+
+    "AUX_PARAMS": {
+        "dropout" : 0.5
+    }
+}

@@ -1,0 +1,5 @@
+{
+    "NAME": "FPN_resnet50_pretrained",
+    "MODE": "load",
+    "MODEL_PATH": "models\\torch\\hub\\checkpoints\\resnet50-19c8e357.pth"
+}

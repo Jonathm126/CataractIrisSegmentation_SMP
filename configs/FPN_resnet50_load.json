@@ -1,0 +1,5 @@
+{
+    "NAME": "FPN_resnet50_pretrained",
+    "MODE": "load",
+    "MODEL_PATH": "models\\models_cache\\FPN_resnet50_pretrained_20240621_2312.pth"
+}

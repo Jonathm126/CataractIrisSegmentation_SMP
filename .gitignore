@@ -1,0 +1,25 @@
+# Ignore Python bytecode files
+__pycache__/
+**/__pycache__/
+models/__pycache__/
+
+# code
+*.py[cod]
+.vscode
+
+# ignorer torch models
+models/torch/hub/checkpoints
+
+# ignore lightning logs
+lightning_logs/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore virtual environment directories
+venv/
+env/
+
+# Ignore system files
+.DS_Store
+Thumbs.db

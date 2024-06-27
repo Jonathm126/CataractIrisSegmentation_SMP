@@ -1,0 +1,18 @@
+{
+    "NAME": "FPN_resnet50_pretrained",
+    "MODE": "train",
+    "NUM_EPOCHS": 10,
+
+    "CLASSES": ["pupil"],
+    "IN_CH": 3,
+
+    "ARCH": "FPN",
+    "ENCODER": "resnet50",
+    "ENCODER_WEIGHTS": "imagenet",
+    "LOSS": "DiceLoss",
+
+    "AUX_PARAMS": {
+        "dropout" : 0.5,
+        "activation" : "sigmoid"
+    }
+}
