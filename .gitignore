@@ -21,7 +21,7 @@ venv/
 env/
 
 # problem with large model files
-logs/
+*.ckpt
 
 # Ignore system files
 .DS_Store
