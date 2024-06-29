@@ -93,13 +93,20 @@ def display_mask(image, mask1, mask2=None, mode='side_by_side'):
 
     plt.show()
     
-def plot_losses(csv_path, metrics):
+def plot_losses(csv_path, metrics, test = False):
     # Read the CSV file
     df = pd.read_csv(csv_path)
+    
+    # drop epochs if we are plotting per image
+    if test == True:
+        df = df[df['epoch'].isnull()]
+    
     # clean
     df = df.groupby('step').first().reset_index()
+    
+    # convert
     df = df.astype('float16')
-    df = df.astype({'epoch': 'int16', 'step': 'int16'})
+    df = df.astype({'step': 'int16'})
     
     # Plot all metrics
     fig, axes = plt.subplots(1, len(metrics), figsize=(5 * len(metrics), 3))
@@ -107,11 +114,14 @@ def plot_losses(csv_path, metrics):
     # Plot each metric in its own subplot
     for idx, metric in enumerate(metrics):
         ax = axes[idx]
-        ax.plot(df['epoch'], df[f'train_{metric}'], label=f'Training {metric}')
-        ax.plot(df['epoch'], df[f'valid_{metric}'], label=f'Validation {metric}')
-        ax.set_xlabel('Epoch')
+        if test == False:
+            ax.plot(df['epoch'], df[f'train_{metric}'], label=f'Training {metric}')
+            ax.plot(df['epoch'], df[f'valid_{metric}'], label=f'Validation {metric}')
+            ax.set_xlabel('Epoch')
+        else:
+            ax.scatter(df['step'], df[f'test_{metric}'], label=f'Test {metric}', s=5)
+            ax.set_xlabel('Image index')
         ax.set_ylabel(metric.capitalize())
-        ax.set_title(f'Training and Validation {metric.capitalize()} Over Steps')
         ax.legend()
         ax.set_ylim(0, 1)
         ax.grid(True)

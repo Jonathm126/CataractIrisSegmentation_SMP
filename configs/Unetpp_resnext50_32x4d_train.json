@@ -1,0 +1,19 @@
+{
+    "NAME": "Unetpp_resnext50_32x4d_pretrained_DiceLoss",
+    "MODE": "train",
+    "NUM_EPOCHS": 10,
+
+    "CLASSES": ["pupil"],
+    "IN_CH": 3,
+
+    "ARCH": "UnetPlusPlus",
+    "ENCODER": "resnext50_32x4d",
+    "ENCODER_WEIGHTS": "imagenet",
+    "LOSS": "DiceLoss",
+
+    "LR": 0.0001, 
+
+    "AUX_PARAMS": {
+        "dropout" : 0.5
+    }
+}

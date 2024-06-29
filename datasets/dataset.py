@@ -46,10 +46,11 @@ class SegmentationDataset(Dataset):
 
 class SegmentationInferenceDataset(Dataset):
     # Dataset for inference (no labels)
-    def __init__(self, root,transform=None):
+    def __init__(self, root, is_stereo, transform=None):
         super().__init__()
         # scan for images in the root directory
         self.root = root
+        self.is_stereo = is_stereo
         
         # scan for images in the root
         self.image_paths = []
@@ -61,7 +62,9 @@ class SegmentationInferenceDataset(Dataset):
         self.transform = transform
         
     def __len__(self):
-        return len(self.image_paths)
+        # factor 2 if each image is stereo image
+        return (2 if self.is_stereo else 1) * len(self.image_paths)
+
     '''
     def __getitem__(self, idx):
         img_path = self.image_paths(idx)
@@ -81,7 +84,7 @@ class SegmentationInferenceDataset(Dataset):
         return left_img, right_img
     '''
     def __getitem__(self, idx):
-        stereo_idx = idx // 2  # Index of the stereo image
+        stereo_idx = idx // (2 if self.is_stereo else 1)  # Index of the stereo image, if stereo mode
         is_right = idx % 2     # Determine if it is left or right image
 
         img_path = self.image_paths[stereo_idx]
@@ -93,20 +96,28 @@ class SegmentationInferenceDataset(Dataset):
         _, _, width = img.shape
         mid_point = width // 2
         
-        if is_right:
-            img = img[:, :, mid_point:]
-        else:
-            img = img[:, :, :mid_point]
-        
+        # if stereo, cut image in half
+        if self.is_stereo:
+            if is_right:
+                img = img[:, :, mid_point:]
+            else:
+                img = img[:, :, :mid_point]
+            
         if self.transform:
             img = self.transform(img)
         
         return img
+    
+    def __get_img_name__(self,idx):
+        # compute stereo idx if stereo mode
+        stereo_idx = idx // (2 if self.is_stereo else 1)
+        img_path = self.image_paths[stereo_idx]
+        return os.path.basename(img_path)
 
 def build_dataloaders(train_dataset, valid_dataset, test_dataset, batch_size = 6):
     n_cpu = os.cpu_count()
     
-    train_dl = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)#, num_workers=n_cpu)
+    train_dl = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)#, num_workers=n_cpu)
     valid_dl = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)#, num_workers=n_cpu)
     test_dl = DataLoader(test_dataset, batch_size=1, shuffle=False)#, num_workers=n_cpu)
     

@@ -20,9 +20,9 @@ class CatSegModel(pl.LightningModule):
         
         # data
         self.config = config
-        if self.training:
-            self.save_hyperparameters(logger=False)
-        
+        # save hparams only if training
+        self.save_hyperparameters(logger=self.training)
+
         # per - epoch logs
         self.train_outputs = []
         self.valid_outputs = []
@@ -62,6 +62,21 @@ class CatSegModel(pl.LightningModule):
         image = (image - self.mean) / self.std
         mask = self.model(image)
         return mask
+    
+    def infer(self,image):
+        # assertion
+        h,w = image.shape[-2:]
+        assert h%32==0 and w%32==0
+        
+        with torch.no_grad():
+            # do a step
+            logits_mask = self.forward(image)
+            
+            # apply thresholding
+            prob_mask = logits_mask.sigmoid()
+            pred_mask = (prob_mask > 0.5).float()
+            
+        return pred_mask
     
     def shared_step(self, batch, stage):
         image, mask = batch
@@ -112,7 +127,7 @@ class CatSegModel(pl.LightningModule):
             f"{stage}_dataset_iou": dataset_iou,
             f"{stage}_dataset_loss": dataset_loss
         }
-        if "stage" is not 'test':
+        if "stage" != 'test':
             self.log_dict(metrics, prog_bar=True, on_epoch=True, on_step=False, logger=True)
 
     def training_step(self, batch, batch_idx):
