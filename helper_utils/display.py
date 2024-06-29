@@ -99,7 +99,7 @@ def plot_losses(csv_path, metrics):
     # clean
     df = df.groupby('step').first().reset_index()
     df = df.astype('float16')
-    df = df.astype({'epoch': 'int8', 'step': 'int8'})
+    df = df.astype({'epoch': 'int16', 'step': 'int16'})
     
     # Plot all metrics
     fig, axes = plt.subplots(1, len(metrics), figsize=(5 * len(metrics), 3))
@@ -107,9 +107,9 @@ def plot_losses(csv_path, metrics):
     # Plot each metric in its own subplot
     for idx, metric in enumerate(metrics):
         ax = axes[idx]
-        ax.plot(df['step'], df[f'train_{metric}'], label=f'Training {metric}')
-        ax.plot(df['step'], df[f'valid_{metric}'], label=f'Validation {metric}')
-        ax.set_xlabel('Step')
+        ax.plot(df['epoch'], df[f'train_{metric}'], label=f'Training {metric}')
+        ax.plot(df['epoch'], df[f'valid_{metric}'], label=f'Validation {metric}')
+        ax.set_xlabel('Epoch')
         ax.set_ylabel(metric.capitalize())
         ax.set_title(f'Training and Validation {metric.capitalize()} Over Steps')
         ax.legend()

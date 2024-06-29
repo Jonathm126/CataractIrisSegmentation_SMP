@@ -103,11 +103,11 @@ class SegmentationInferenceDataset(Dataset):
         
         return img
 
-def build_dataloaders(train_dataset, valid_dataset, test_dataset):
+def build_dataloaders(train_dataset, valid_dataset, test_dataset, batch_size = 6):
     n_cpu = os.cpu_count()
     
-    train_dl = DataLoader(train_dataset, batch_size=6, shuffle=True)#, num_workers=n_cpu)
-    valid_dl = DataLoader(valid_dataset, batch_size=6, shuffle=False)#, num_workers=n_cpu)
+    train_dl = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)#, num_workers=n_cpu)
+    valid_dl = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)#, num_workers=n_cpu)
     test_dl = DataLoader(test_dataset, batch_size=1, shuffle=False)#, num_workers=n_cpu)
     
     return train_dl, valid_dl, test_dl
