@@ -1,8 +1,10 @@
-models transformation - check image types and sizes for inference
-infer on test images
+* Generate masks for test data for all models.
+* Evaluate metrics and compare for models.
+ * I plan to add the hausdorff metric which is the interesting one for our case. + Add average eye diameter normalization.
+* Evaluate time with torch.benchmark.
+* More models?
 
-nth:
-static idx numbers ?
+* add name for inferred images
 
 separate evaluation script:
 compare histogram of iou and hausdorff distance 
