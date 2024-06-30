@@ -1,0 +1,6 @@
+{
+    "log_path": "logs",
+    "train_data_root": "G:\\My Drive\\Github\\Cataract_Semantic_Segmentation\\Data\\FSR Dataset\\Yolo_Segmentation_640x640",
+    "inference_data_root": "G:\\My Drive\\Github\\Cataract_Semantic_Segmentation\\Data\\FSR Dataset\\Ori_youtube_20",
+    "inference_save_path": "infer"
+}

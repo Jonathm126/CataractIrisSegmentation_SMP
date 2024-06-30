@@ -1,10 +1,11 @@
 import json
 import os
 
-def load_configs(config_name):
+def load_configs(config_name, paths_path):
     "Load Config Files"
     try:
-        with open('paths.json', 'r') as f:
+        paths_path = os.path.join('configs/paths', paths_path)
+        with open(paths_path, 'r') as f:
             paths = json.load(f)
     except: raise ValueError("no pths json :(")
     

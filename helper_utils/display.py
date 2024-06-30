@@ -21,7 +21,7 @@ def display_for_epoch(model, dataset, sample_indices, device):
 
         # infer
         with torch.no_grad():
-            predicted_mask = model(image).squeeze(0)
+            predicted_mask = model.infer(image).squeeze(0)
         
         # Move to CPU for plotting
         image = image.squeeze(0).cpu()
@@ -71,28 +71,28 @@ def display_mask(image, mask1, mask2=None, mode='side_by_side'):
             plt.axis('off')
 
     elif mode == 'overlay':
-        plt.subplot(1, 3, 1)
-        plt.imshow(image_np)
-        plt.title('Image')
-        plt.axis('off')
-
-        plt.subplot(1, 3, 2)
-        visualiz_gt = utils.draw_segmentation_masks(image, masks=mask1 > 0.5, alpha=0.8, colors='green')
-        visualiz_gt_np = visualiz_gt.permute(1, 2, 0).cpu().numpy()
-        plt.imshow(visualiz_gt_np)
-        plt.title('Image with GT Mask')
-        plt.axis('off')
-
-        if mask2 is not None:
-            plt.subplot(1, 3, 3)
-            visualiz_infer = utils.draw_segmentation_masks(image, masks=mask2 > 0.5, alpha=0.8, colors='red')
-            visualiz_infer_np = visualiz_infer.permute(1, 2, 0).cpu().numpy()
-            plt.imshow(visualiz_infer_np)
-            plt.title('Image with Inferred Mask')
+            plt.figure(figsize=(5, 5))
+            combined_overlay = utils.draw_segmentation_masks(image, masks=mask1 > 0.5, alpha=0.5, colors='green')
+            if mask2 is not None:
+                combined_overlay = utils.draw_segmentation_masks(combined_overlay, masks=mask2 > 0.5, alpha=0.5, colors='red')
+            combined_overlay_np = combined_overlay.permute(1, 2, 0).cpu().numpy()
+            plt.imshow(combined_overlay_np)
             plt.axis('off')
 
     plt.show()
     
+def save_mask(image, mask1, path, mask2 = None):
+    # convert
+    image = F.convert_image_dtype(image, dtype=torch.uint8)
+    # combine
+    overlay = utils.draw_segmentation_masks(image, masks=mask1>0.5, alpha=0.6, colors='green')
+    if mask2 is not None:
+        overlay = utils.draw_segmentation_masks(overlay, masks=mask2 > 0.5, alpha=0.6, colors='red')
+    
+    combined_image = F.to_pil_image(overlay)
+    combined_image.save(path)
+
+
 def plot_losses(csv_path, metrics, test = False):
     # Read the CSV file
     df = pd.read_csv(csv_path)

@@ -11,16 +11,18 @@ class SegmentationDataset(Dataset):
     def __init__(self, root_dir):
         super().__init__()
         # get images
+        imagetytpes = ('.png', '.jpg', '.jpeg', '.tiff', '.bmp')
         self.image_dir = os.path.join(root_dir, 'images')
         self.label_dir = os.path.join(root_dir, 'labels')
-        self.image_paths = [os.path.join(self.image_dir, fname) for fname in os.listdir(self.image_dir) if fname.endswith('.png')]
-        self.label_paths = [os.path.join(self.label_dir, fname) for fname in os.listdir(self.label_dir) if fname.endswith('.png')]
+        self.image_paths = [os.path.join(root, fname) for root, _, files in os.walk(self.image_dir) for fname in files if fname.endswith(imagetytpes)]
+        self.label_paths = [os.path.join(root, fname) for root, _, files in os.walk(self.label_dir) for fname in files if fname.endswith(imagetytpes)]
         
         self.transform = None
         
         # Ensure images and labels are aligned
-        self.image_paths.sort()
-        self.label_paths.sort()
+        self.image_paths.sort(key=lambda x: os.path.basename(x))
+        self.label_paths.sort(key=lambda x: os.path.basename(x))
+        
         assert len(self.image_paths) == len(self.label_paths), "Number of images and labels must be equal"
         for img_path, lbl_path in zip(self.image_paths, self.label_paths):
             assert os.path.basename(img_path) == os.path.basename(lbl_path), f"Mismatch: {img_path} and {lbl_path}"

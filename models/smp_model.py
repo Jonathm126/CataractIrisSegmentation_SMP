@@ -70,7 +70,7 @@ class CatSegModel(pl.LightningModule):
         
         with torch.no_grad():
             # do a step
-            logits_mask = self.forward(image)
+            logits_mask = self(image)
             
             # apply thresholding
             prob_mask = logits_mask.sigmoid()

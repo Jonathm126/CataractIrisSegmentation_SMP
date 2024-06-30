@@ -1,11 +1,11 @@
-models transformation - maybe lightning has somethig? - load transforms from smp
-log also after step
-test logging
-static idx numbers
-infer on test images using lightning ifeer
-save training reuslts
+models transformation - check image types and sizes for inference
+infer on test images
+
+nth:
+static idx numbers ?
 
 separate evaluation script:
-for all experiments
-evaluation script
+compare histogram of iou and hausdorff distance 
+https://scikit-image.org/docs/stable/api/skimage.metrics.html#skimage.metrics.hausdorff_distance
 meeasure time
+https://pytorch.org/tutorials/recipes/recipes/benchmark.html

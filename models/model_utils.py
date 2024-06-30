@@ -1,38 +1,13 @@
 # torch lightning
 from pytorch_lightning import Trainer
-from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks import ModelCheckpoint, prediction_writer
 from pytorch_lightning.loggers import CSVLogger
+from torch import no_grad
+from helper_utils import display
+import random
 
 # utils
 import os
-
-def infer_on_image(model, image_path, transform):
-    """
-    Function to perform inference on a single image.
-    
-    Args:
-    - model (nn.Module): The trained segmentation model.
-    - image_path (str): Path to the input image.
-    - transform (callable): Transformation to be applied to the image.
-    
-    Returns:
-    - The inferred mask for the input image.
-    """
-    # Load and preprocess the image
-    image = Image.open(image_path).convert('RGB')
-    image_tensor = transform(image)
-    image_tensor = image_tensor.unsqueeze(0)  # Add batch dimension
-
-    # Perform inference
-    model.eval()
-    with torch.no_grad():
-        output = model(image_tensor)
-    
-    # Post-process the output
-    inferred_mask = output.squeeze().cpu().numpy()  # Remove batch dimension and move to CPU
-    inferred_mask = (inferred_mask > 0.5).astype(np.uint8)  # Threshold the output
-    
-    return inferred_mask
 
 def build_trainer(config, paths):
     "Sets up the trainer for PL training of the SMP model"
@@ -61,3 +36,41 @@ def build_trainer(config, paths):
         logger = csv_logger
     )
     return trainer, csv_logger
+
+def infer_set(model, device, pth, dataset, save=True, print=None):
+    # setup
+    model.eval()
+    model.to(device)
+    
+    # inference loop
+    with no_grad():
+        if save:
+            for idx in range(len(dataset)):
+                data = dataset[idx]
+                # detect if we have a img, mask or just image
+                img, gt_mask = data if isinstance(data, tuple) and len(data) == 2 else (data, None)
+                # cuda
+                img = img.to(device)
+                # infer mask
+                pred_mask = model.infer(img)
+                pred_mask = pred_mask.squeeze(0).squeeze(0).cpu()
+                # save mask
+                os.makedirs(pth, exist_ok=True)
+                display.save_mask(img, mask1=gt_mask, mask2=pred_mask, path=os.path.join(pth, f'test_{idx}.png'))
+        
+        # print a few samples
+        if print is not None:
+            for idx in random.sample(range(len(dataset)), print):
+                data = dataset[idx]
+                # detect if we have a img, mask or just image
+                if isinstance(data, tuple) and len(data) == 2: # we get a GT mask
+                    img, gt_mask = data
+                    pred_mask = model.infer(img.to(device)).squeeze(0).squeeze(0).cpu()
+                else:
+                    img = data
+                    pred_mask = None
+                    gt_mask = model.infer(img.to(device)).squeeze(0).squeeze(0).cpu()
+                # infer mask
+                # display
+                display.display_mask(img, mask1=gt_mask, mask2=pred_mask, mode='overlay')
+    
