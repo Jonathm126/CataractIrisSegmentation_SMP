@@ -12,7 +12,6 @@ models/torch/hub/checkpoints
 
 # ignore lightning logs
 lightning_logs/
-logs/
 
 # Ignore Jupyter Notebook checkpoints
 .ipynb_checkpoints/

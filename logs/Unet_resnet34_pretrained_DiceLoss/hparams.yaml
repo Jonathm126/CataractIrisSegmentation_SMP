@@ -1,0 +1,14 @@
+config:
+  ARCH: Unet
+  AUX_PARAMS:
+    dropout: 0.5
+  CLASSES:
+  - pupil
+  ENCODER: resnet34
+  ENCODER_WEIGHTS: imagenet
+  IN_CH: 3
+  LOSS: DiceLoss
+  LR: 0.0001
+  MODE: train
+  NAME: resnet34_pretrained_DiceLoss
+  NUM_EPOCHS: 10
