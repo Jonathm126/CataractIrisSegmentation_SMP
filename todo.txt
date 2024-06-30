@@ -1,0 +1,11 @@
+models transformation - maybe lightning has somethig? - load transforms from smp
+log also after step
+test logging
+static idx numbers
+infer on test images using lightning ifeer
+save training reuslts
+
+separate evaluation script:
+for all experiments
+evaluation script
+meeasure time
