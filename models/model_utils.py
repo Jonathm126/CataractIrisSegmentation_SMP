@@ -48,12 +48,19 @@ def infer_set(model, device, pth, dataset, save=True, print=None):
             for idx in range(len(dataset)):
                 data = dataset[idx]
                 # detect if we have a img, mask or just image
-                img, gt_mask = data if isinstance(data, tuple) and len(data) == 2 else (data, None)
-                # cuda
-                img = img.to(device)
-                # infer mask
-                pred_mask = model.infer(img)
-                pred_mask = pred_mask.squeeze(0).squeeze(0).cpu()
+                if isinstance(data, tuple) and len(data) == 2: # we get a GT mask
+                    img, gt_mask = data
+                    # cuda
+                    img = img.to(device)
+                    # infer
+                    pred_mask = model.infer(img).squeeze(0).squeeze(0).cpu()
+                else:
+                    img = data
+                    pred_mask = None
+                    # cuda
+                    img = img.to(device)
+                    # infer
+                    gt_mask = model.infer(img).squeeze(0).squeeze(0).cpu()
                 # save mask
                 os.makedirs(pth, exist_ok=True)
                 display.save_mask(img, mask1=gt_mask, mask2=pred_mask, path=os.path.join(pth, f'test_{idx}.png'))
