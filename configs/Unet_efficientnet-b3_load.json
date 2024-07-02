@@ -1,5 +1,4 @@
 {
     "NAME": "Unet_efficientnet-b3_pretrained_DiceLoss",
-    "MODE": "load",
-    "MODEL_PATH": "logs\\Unet_efficientnet-b3_pretrained_DiceLoss\\version_0"
+    "MODE": "load"
 }

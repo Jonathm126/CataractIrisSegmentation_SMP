@@ -4,10 +4,13 @@
 * Evaluate time with torch.benchmark.
 * More models?
 
-* add name for inferred images
 
 separate evaluation script:
 compare histogram of iou and hausdorff distance 
 https://scikit-image.org/docs/stable/api/skimage.metrics.html#skimage.metrics.hausdorff_distance
 meeasure time
 https://pytorch.org/tutorials/recipes/recipes/benchmark.html
+
+- add loss for circularity?
+- transforms from Zion
+- named loaded images

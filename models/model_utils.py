@@ -61,9 +61,11 @@ def infer_set(model, device, pth, dataset, save=True, print=None):
                     img = img.to(device)
                     # infer
                     gt_mask = model.infer(img).squeeze(0).squeeze(0).cpu()
+                # do we have a loader that gives names? if so, use that
+                img_name = f'test_{dataset.__get_img_name__(idx)}' if hasattr(dataset, '__get_img_name__') else f'test_{idx}.png'
                 # save mask
                 os.makedirs(pth, exist_ok=True)
-                display.save_mask(img, mask1=gt_mask, mask2=pred_mask, path=os.path.join(pth, f'test_{idx}.png'))
+                display.save_mask(img, mask1=gt_mask, mask2=pred_mask, path=os.path.join(pth, img_name))
         
         # print a few samples
         if print is not None:

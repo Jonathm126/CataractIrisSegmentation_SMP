@@ -67,24 +67,6 @@ class SegmentationInferenceDataset(Dataset):
         # factor 2 if each image is stereo image
         return (2 if self.is_stereo else 1) * len(self.image_paths)
 
-    '''
-    def __getitem__(self, idx):
-        img_path = self.image_paths(idx)
-        img = Image(io.read_image(img_path))
-        
-        # split stereo image
-        _, _, w = img.shape
-        mid_point = w // 2
-        
-        left_img = img[:,:,:mid_point]
-        right_img = img[:,:,mid_point:]
-        
-        if self.transform:
-            left_img = self.transform(left_img)
-            right_img = self.transform(right_img)
-        
-        return left_img, right_img
-    '''
     def __getitem__(self, idx):
         stereo_idx = idx // (2 if self.is_stereo else 1)  # Index of the stereo image, if stereo mode
         is_right = idx % 2     # Determine if it is left or right image
