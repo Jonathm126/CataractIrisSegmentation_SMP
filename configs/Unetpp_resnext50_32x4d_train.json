@@ -15,31 +15,5 @@
 
     "AUX_PARAMS": {
         "dropout" : 0.5
-    },
-
-    "TRANSFORMS": {
-        "train": {
-            "RandomResizedCrop": {
-                "size": 640,
-                "scale": [0.5, 1.1]
-            },
-            "RandomHorizontalFlip": {
-                "p": 0.5
-            },
-            "ToImage": {},
-            "RandomPerspective": {}
-        },
-        "valid": {
-            "CenterCrop": {
-                "size": 640
-            },
-            "ToImage": {}
-        },
-        "test": {
-            "CenterCrop": {
-                "size": 640
-            },
-            "ToImage": {}
-        }
     }
 }

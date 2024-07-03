@@ -163,3 +163,27 @@ valid_size = int(valid_ratio * total_size)
 test_size = total_size - train_size - valid_size
 train_dataset, valid_dataset, test_dataset = random_split(full_dataset, [train_size, valid_size, test_size])
 train_dataset.dataset = copy(full_dataset) # disgusting solution for pytorch
+
+
+
+    # transforms build
+    transforms_config = config.get("TRANSFORMS", {})
+    data_transforms = {}
+    # build of each phase
+    for phase, phase_transforms in transforms_config.items():
+        transform_list = []
+        for transform_name, params in phase_transforms.items():
+            transform_class = getattr(T, transform_name)
+            if params:
+                transform_list.append(transform_class(**params))
+            else:
+                transform_list.append(transform_class())
+        # display
+        
+        data_transforms[phase] = T.Compose(transform_list)
+        
+            # print the transforms
+    for phase, transforms in config['TRANSFORMS'].items():
+        df_transforms = pd.DataFrame(transforms.items())
+        ipy_display(df_transforms)
+    

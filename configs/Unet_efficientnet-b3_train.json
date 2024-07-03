@@ -15,45 +15,5 @@
 
     "AUX_PARAMS": {
         "dropout" : 0.5
-    },
-    
-    "TRANSFORMS": {
-            "train": {
-                "ToImage": {},
-                "RandomHorizontalFlip": {
-                    "p": 0.5
-                },
-                "RandomVerticalFlip": {
-                    "p": 0.5
-                },
-                "ColorJitter":{
-                    "brightness": 0.2,
-                    "contrast": 0.2,
-                    "saturation": 0.2,
-                    "hue": 0.1
-                },
-                "RandomPerspective": {
-                    "distortion_scale": 0.2,
-                    "p" : 0.7
-                } 
-            },
-            "valid": {
-                "CenterCrop": {
-                    "size": 640
-                },
-                "ToImage": {}
-            },
-            "test": {
-                "Resize":{(640 - 256, 640 - 32)},
-                "Pad":{"pad":[16, 128, 16, 128], "fill" :(0.5, 0.5, 0.5)},
-                "CenterCrop"{640}
-                "ToImage":{},
-                "ToType""{torch.utint,8
-                2     T.Resize((640 - 256, 640 - 32)),
-                3     T.Pad([16, 128, 16, 128], (0.5, 0.5, 0.5)),
-                4     T.CenterCrop(640),
-                5     T.ToImage(),
-                6     T.ToDtype(torch.uint8, scale=True),
-            }
-        }
+    }
 }

@@ -24,28 +24,22 @@ def load_configs(config_name, paths_path):
     # torch setup
     os.environ['TORCH_HOME'] = 'models/torch'
     
-    # transforms build
-    transforms_config = config.get("TRANSFORMS", {})
-    data_transforms = {}
-    # build of each phase
-    for phase, phase_transforms in transforms_config.items():
-        transform_list = []
-        for transform_name, params in phase_transforms.items():
-            transform_class = getattr(T, transform_name)
-            if params:
-                transform_list.append(transform_class(**params))
-            else:
-                transform_list.append(transform_class())
-        # display
-        
-        data_transforms[phase] = T.Compose(transform_list)
-        
     # print the configs
     df = pd.DataFrame(list(config.items()), columns=['Key', 'Value'])
     ipy_display(df)
-    # print the transforms
-    for phase, transforms in config['TRANSFORMS'].items():
-        df_transforms = pd.DataFrame(transforms.items())
-        ipy_display(df_transforms)
     
-    return paths, config, data_transforms
+    return paths, config
+
+def print_transforms(data_transforms):
+    data = []
+    for transform_name, transform in data_transforms.items():
+        for t in transform.transforms:
+            data.append({"Set": transform_name, "Transform": t.__class__.__name__, "Details": str(t)})
+
+    df = pd.DataFrame(data).groupby('Set')
+    for name, group in df:
+        print(f"Transforms for {name} set:")
+        pd.set_option('display.max_colwidth', None)
+        ipy_display(group.reset_index(drop=True))
+        print("\n")
+    ipy_display(df)
