@@ -41,6 +41,7 @@ def display_mask(image, mask1, mask2=None, mode='side_by_side'):
     - inferred_mask (Tensor, optional): The inferred mask.
     - mode (str): Display mode, either 'side_by_side' or 'overlay'.
     """
+    # get image
     image = F.convert_image_dtype(image, dtype=torch.uint8)
 
     # Convert tensors to numpy arrays
@@ -53,14 +54,14 @@ def display_mask(image, mask1, mask2=None, mode='side_by_side'):
         plt.imshow(image_np)
         plt.title('Image')
         plt.axis('off')
-
-        plt.subplot(1, 3, 2)
-        visualiz_gt = utils.draw_segmentation_masks(image, masks=mask1 > 0.5, alpha=0.8, colors='green')
-        visualiz_gt_np = visualiz_gt.permute(1, 2, 0).cpu().numpy()
-        plt.imshow(visualiz_gt_np)
         
-        plt.title('Ground Truth Mask')
-        plt.axis('off')
+        if mask1 is not None:
+            plt.subplot(1, 3, 2)
+            visualiz_gt = utils.draw_segmentation_masks(image, masks=mask1 > 0.5, alpha=0.8, colors='green')
+            visualiz_gt_np = visualiz_gt.permute(1, 2, 0).cpu().numpy()
+            plt.imshow(visualiz_gt_np)
+            plt.title('Ground Truth Mask')
+            plt.axis('off')
 
         if mask2 is not None:
             plt.subplot(1, 3, 3)
@@ -72,11 +73,12 @@ def display_mask(image, mask1, mask2=None, mode='side_by_side'):
 
     elif mode == 'overlay':
             plt.figure(figsize=(5, 5))
-            combined_overlay = utils.draw_segmentation_masks(image, masks=mask1 > 0.5, alpha=0.5, colors='green')
+            if mask1 is not None:
+                image = utils.draw_segmentation_masks(image, masks=mask1 > 0.5, alpha=0.5, colors='green')
             if mask2 is not None:
-                combined_overlay = utils.draw_segmentation_masks(combined_overlay, masks=mask2 > 0.5, alpha=0.5, colors='red')
-            combined_overlay_np = combined_overlay.permute(1, 2, 0).cpu().numpy()
-            plt.imshow(combined_overlay_np)
+                image = utils.draw_segmentation_masks(image, masks=mask2 > 0.5, alpha=0.5, colors='red')
+            image = image.permute(1, 2, 0).cpu().numpy()
+            plt.imshow(image)
             plt.axis('off')
 
     plt.show()
@@ -85,9 +87,10 @@ def save_mask(image, mask1, path, mask2 = None):
     # convert
     image = F.convert_image_dtype(image, dtype=torch.uint8)
     # combine
-    overlay = utils.draw_segmentation_masks(image, masks=mask1>0.5, alpha=0.6, colors='green')
+    if mask1 is not None:
+        image = utils.draw_segmentation_masks(image, masks=mask1>0.5, alpha=0.6, colors='green')
     if mask2 is not None:
-        overlay = utils.draw_segmentation_masks(overlay, masks=mask2 > 0.5, alpha=0.6, colors='red')
+        overlay = utils.draw_segmentation_masks(image, masks=mask2 > 0.5, alpha=0.6, colors='red')
     
     combined_image = F.to_pil_image(overlay)
     combined_image.save(path)

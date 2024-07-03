@@ -35,7 +35,8 @@ data_transforms_v1['valid'] = T.Compose([
 
 data_transforms_v1["infer"] = T.Compose([
     T.ToImage(),
-    T.Resize(640-256, 640-32),
-    T.Pad([16,128,16,128], fill=[0.5,0.5,0.5]),
+    T.Resize([640-256, 640-32]),
+    T.Pad([16,128,16,128], fill=[0.5]*3),
+    T.CenterCrop(640),
     T.ToDtype(uint8, scale=True)
 ])

@@ -2,6 +2,6 @@
     "log_path": "logs",
     "train_data_root": "G:\\My Drive\\Github\\Cataract_Semantic_Segmentation\\Data\\FSR Dataset\\Yolo_Segmentation_640x640",
     "inference_data_root": "G:\\My Drive\\Github\\Cataract_Semantic_Segmentation\\Data\\FSR Dataset\\Ori_youtube_20",
-    "inference_save_path": "inG:\\My Drive\\Github\\Cataract_Semantic_Segmentation\\Data\\FSR Dataset\\Ori_youtube_20\\infer",
-    "checkpoint_path": "D:\\OneDrive\\personal onedrive\\OneDrive\\MSc in Data Science\\24 Spring\\Healthcare AI\\Final Project\\Model Chekpoints"
+    "inference_save_path": "G:\\My Drive\\Github\\Cataract_Semantic_Segmentation\\Data\\FSR Dataset\\Ori_youtube_20_infer",
+    "checkpoint_path": "C:\\Users\\jonathan\\OneDrive\\MSc in Data Science\\24 Spring\\Healthcare AI\\Final Project\\Model Chekpoints"
 }

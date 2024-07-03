@@ -2,9 +2,9 @@
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import CSVLogger
-from torch import no_grad
+import torch
 from helper_utils import display_utils
-import random
+import numpy as np
 
 # utils
 import os
@@ -37,49 +37,63 @@ def build_trainer(config, paths):
     )
     return trainer, csv_logger
 
-def infer_set(model, device, pth, dataset, save=True, print=None):
+def infer_set(model, device, pth, dataset, save=False, to_print=None, time=False, all = False):
     # setup
     model.eval()
     model.to(device)
+
+    # decide on what to iterate
+    print_idx = np.random.randint(low=0, high=len(dataset), size=to_print)
+    itr_range = range(len(dataset)) if (save or all) else print_idx
+    
+    # prep for time measurement
+    if time:
+        # cuda timing
+        starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+        # warmup
+        dummy_input = torch.randn(1,3,640,640, dtype=torch.float).to(device)
+        for _ in range(10):
+            _ = model(dummy_input)
+        timings = []
     
     # inference loop
-    with no_grad():
-        if save:
-            for idx in range(len(dataset)):
-                data = dataset[idx]
-                # detect if we have a img, mask or just image
-                if isinstance(data, tuple) and len(data) == 2: # we get a GT mask
-                    img, gt_mask = data
-                    # cuda
-                    img = img.to(device)
-                    # infer
-                    pred_mask = model.infer(img).squeeze(0).squeeze(0).cpu()
-                else:
-                    img = data
-                    pred_mask = None
-                    # cuda
-                    img = img.to(device)
-                    # infer
-                    gt_mask = model.infer(img).squeeze(0).squeeze(0).cpu()
+    with torch.no_grad():
+        # infer and measure time
+        for idx in itr_range:
+            # get data
+            data = dataset[idx]
+            if isinstance(data, tuple) and len(data) == 2: # we get a GT mask
+                img, gt_mask = data
+            else: # only image
+                img = data
+                gt_mask = None
+            # cuda
+            img = img.to(device)
+            # time if needed
+            if time:
+                starter.record()
+            # predict
+            pred_mask = pred_mask = model.infer(img).squeeze(0).squeeze(0)
+            # time after prediction
+            if time:
+                ender.record()
+                torch.cuda.synchronize()
+                curr_time = starter.elapsed_time(ender)
+                timings.append(curr_time)
+            # move to cpu for post processing
+            pred_mask = pred_mask.cpu()
+            # save if needed
+            if save:
                 # do we have a loader that gives names? if so, use that
                 img_name = f'test_{dataset.__get_img_name__(idx)}' if hasattr(dataset, '__get_img_name__') else f'test_{idx}.png'
                 # save mask
                 os.makedirs(pth, exist_ok=True)
                 display_utils.save_mask(img, mask1=gt_mask, mask2=pred_mask, path=os.path.join(pth, img_name))
+
+            # print a few samples if needed
+            if to_print is not None:
+                if idx in print_idx:
+                    # check if this is an image to print
+                    display_utils.display_mask(img, mask1=gt_mask, mask2=pred_mask, mode='overlay')
         
-        # print a few samples
-        if print is not None:
-            for idx in random.sample(range(len(dataset)), print):
-                data = dataset[idx]
-                # detect if we have a img, mask or just image
-                if isinstance(data, tuple) and len(data) == 2: # we get a GT mask
-                    img, gt_mask = data
-                    pred_mask = model.infer(img.to(device)).squeeze(0).squeeze(0).cpu()
-                else:
-                    img = data
-                    pred_mask = None
-                    gt_mask = model.infer(img.to(device)).squeeze(0).squeeze(0).cpu()
-                # infer mask
-                # display
-                display_utils.display_mask(img, mask1=gt_mask, mask2=pred_mask, mode='overlay')
-    
+        return np.array(timings) if time else None

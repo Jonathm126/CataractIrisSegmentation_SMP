@@ -48,7 +48,7 @@ class SegmentationDataset(Dataset):
 
 class SegmentationInferenceDataset(Dataset):
     # Dataset for inference (no labels)
-    def __init__(self, root, is_stereo, transform=None):
+    def __init__(self, root, is_stereo, transform=None, exclude = None):
         super().__init__()
         # scan for images in the root directory
         self.root = root

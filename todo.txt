@@ -11,6 +11,7 @@ nth:
 comparison notebook:
 * Evaluate metrics and compare for models.
 * compare with old and new transform, and with old and new metrics
+* effect of epochs
 
 
 separate evaluation script:

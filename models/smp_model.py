@@ -1,6 +1,7 @@
 # torch
 import torch
 import torch.utils
+import torch.utils.benchmark
 import torch.utils.data
 import pytorch_lightning as pl
 
@@ -174,7 +175,6 @@ class CatSegModel(pl.LightningModule):
         self.test_outputs.clear()
 
     def configure_optimizers(self):
-        #@TODO add scheduling
         lr = self.config.get('LR', 0.0001)
         return torch.optim.Adam(self.parameters(), lr=lr)
     
