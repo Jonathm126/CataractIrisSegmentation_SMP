@@ -1,8 +1,15 @@
-* Generate masks for test data for all models.
+Must:
+- move checkpoitns to chkpt folder
+- add transforms and compare
+- evaluate time with torch.benchmark
+
+nth:
+- add hausdorff metric and train by it
+- More models?
+- 
+
+comparison notebook:
 * Evaluate metrics and compare for models.
- * I plan to add the hausdorff metric which is the interesting one for our case. + Add average eye diameter normalization.
-* Evaluate time with torch.benchmark.
-* More models?
 
 
 separate evaluation script:
@@ -10,7 +17,3 @@ compare histogram of iou and hausdorff distance
 https://scikit-image.org/docs/stable/api/skimage.metrics.html#skimage.metrics.hausdorff_distance
 meeasure time
 https://pytorch.org/tutorials/recipes/recipes/benchmark.html
-
-- add loss for circularity?
-- transforms from Zion
-- named loaded images

@@ -1,9 +1,9 @@
 # torch lightning
 from pytorch_lightning import Trainer
-from pytorch_lightning.callbacks import ModelCheckpoint, prediction_writer
+from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import CSVLogger
 from torch import no_grad
-from helper_utils import display
+from helper_utils import display_utils
 import random
 
 # utils
@@ -16,7 +16,7 @@ def build_trainer(config, paths):
     csv_logger = CSVLogger(paths['log_path'],name=None)
 
     # Create a ModelCheckpoint callback to save only the best model
-    callback_path = os.path.join(csv_logger.save_dir, csv_logger.name, f'version_{csv_logger.version}')
+    callback_path = os.path.join(paths['checkpoint_path'], config['NAME'], f'version_{csv_logger.version}')
 
     checkpoint_callback = ModelCheckpoint(
         monitor='valid_dataset_loss',  # the metric to monitor
@@ -65,7 +65,7 @@ def infer_set(model, device, pth, dataset, save=True, print=None):
                 img_name = f'test_{dataset.__get_img_name__(idx)}' if hasattr(dataset, '__get_img_name__') else f'test_{idx}.png'
                 # save mask
                 os.makedirs(pth, exist_ok=True)
-                display.save_mask(img, mask1=gt_mask, mask2=pred_mask, path=os.path.join(pth, img_name))
+                display_utils.save_mask(img, mask1=gt_mask, mask2=pred_mask, path=os.path.join(pth, img_name))
         
         # print a few samples
         if print is not None:
@@ -81,5 +81,5 @@ def infer_set(model, device, pth, dataset, save=True, print=None):
                     gt_mask = model.infer(img.to(device)).squeeze(0).squeeze(0).cpu()
                 # infer mask
                 # display
-                display.display_mask(img, mask1=gt_mask, mask2=pred_mask, mode='overlay')
+                display_utils.display_mask(img, mask1=gt_mask, mask2=pred_mask, mode='overlay')
     

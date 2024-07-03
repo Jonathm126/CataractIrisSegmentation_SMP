@@ -1,6 +1,6 @@
 import os
 
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 from torchvision import io
 from torchvision.tv_tensors import Mask, Image
 
@@ -8,7 +8,7 @@ from torch.utils import data
 
 class SegmentationDataset(Dataset):
     "A class for image segmentation datasets."
-    def __init__(self, root_dir):
+    def __init__(self, root_dir, transform = None):
         super().__init__()
         # get images
         imagetytpes = ('.png', '.jpg', '.jpeg', '.tiff', '.bmp')
@@ -17,7 +17,7 @@ class SegmentationDataset(Dataset):
         self.image_paths = [os.path.join(root, fname) for root, _, files in os.walk(self.image_dir) for fname in files if fname.endswith(imagetytpes)]
         self.label_paths = [os.path.join(root, fname) for root, _, files in os.walk(self.label_dir) for fname in files if fname.endswith(imagetytpes)]
         
-        self.transform = None
+        self.transform = transform
         
         # Ensure images and labels are aligned
         self.image_paths.sort(key=lambda x: os.path.basename(x))
@@ -97,12 +97,3 @@ class SegmentationInferenceDataset(Dataset):
         stereo_idx = idx // (2 if self.is_stereo else 1)
         img_path = self.image_paths[stereo_idx]
         return os.path.basename(img_path)
-
-def build_dataloaders(train_dataset, valid_dataset, test_dataset, batch_size = 6):
-    n_cpu = os.cpu_count()
-    
-    train_dl = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)#, num_workers=n_cpu)
-    valid_dl = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)#, num_workers=n_cpu)
-    test_dl = DataLoader(test_dataset, batch_size=1, shuffle=False)#, num_workers=n_cpu)
-    
-    return train_dl, valid_dl, test_dl

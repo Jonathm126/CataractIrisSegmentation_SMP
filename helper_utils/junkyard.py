@@ -132,3 +132,34 @@ def save_model(model, train_logs, valid_logs):
 
     torch.save(save_data, model_path)
     return model_path
+
+# Example transformations
+# @TODO: what is the corect image size
+data_transforms = {}
+data_transforms['train'] = T.Compose([
+    T.RandomResizedCrop(size=640, scale=(0.5, 1.1)),
+    T.RandomHorizontalFlip(p=0.5),
+    T.ToImage(),
+    T.RandomPerspective
+    #T.ToDtype(torch.float32, scale=True)
+    #transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+])
+
+data_transforms['valid'] = T.Compose([
+    #T.Resize(670),
+    T.CenterCrop(640),
+    T.ToImage(),
+    #T.ToDtype(torch.float32, scale=True)
+    #transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+])
+
+data_transforms['test'] = data_transforms['valid']
+
+
+# build datasets
+total_size = len(full_dataset)
+train_size = int(train_ratio * total_size)
+valid_size = int(valid_ratio * total_size)
+test_size = total_size - train_size - valid_size
+train_dataset, valid_dataset, test_dataset = random_split(full_dataset, [train_size, valid_size, test_size])
+train_dataset.dataset = copy(full_dataset) # disgusting solution for pytorch

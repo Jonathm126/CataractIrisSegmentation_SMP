@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 
 # custom utils
-from helper_utils.display import display_for_epoch
+from helper_utils.display_utils import display_for_epoch
 
 class CatSegModel(pl.LightningModule):
     def __init__(self, config, **kwargs):
