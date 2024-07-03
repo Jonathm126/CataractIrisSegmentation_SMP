@@ -40,3 +40,30 @@ data_transforms_v1["infer"] = T.Compose([
     T.CenterCrop(640),
     T.ToDtype(uint8, scale=True)
 ])
+
+
+# diff is: customperspective, colorjitter
+
+data_transforms_v0 = {}
+data_transforms_v0['train'] = T.Compose([
+    T.ToImage(),
+    T.RandomVerticalFlip(p=0.5),
+    T.RandomHorizontalFlip(p=0.5),
+    T.RandomResizedCrop(size=640, scale=(0.7, 1.1)),#, fill={Image: 127, Mask: 0}),
+    T.CenterCrop(640),
+    #T.ToDtype(torch.float32, scale=True)
+])
+
+data_transforms_v0['valid'] = T.Compose([
+    T.ToImage(),
+    T.CenterCrop(640)
+    #T.ToDtype(torch.float32, scale=True)
+])
+
+data_transforms_v0["infer"] = T.Compose([
+    T.ToImage(),
+    T.Resize([640-256, 640-32]),
+    T.Pad([16,128,16,128], fill=[0.5]*3),
+    T.CenterCrop(640),
+    T.ToDtype(uint8, scale=True)
+])

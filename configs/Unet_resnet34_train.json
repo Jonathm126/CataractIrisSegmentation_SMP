@@ -1,5 +1,5 @@
 {
-    "NAME": "Unet_resnet34_pretrained_DiceLoss_Tv1",
+    "NAME": "Unet_resnet34_pretrained_Tv1_DiceLoss",
     "MODE": "train",
     "NUM_EPOCHS": 10,
 

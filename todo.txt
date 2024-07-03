@@ -1,7 +1,5 @@
 Must:
-- move checkpoitns to chkpt folder
-- add transforms and compare
-- evaluate time with torch.benchmark
+- compare transforms to v1
 
 nth:
 - add hausdorff metric and train by it
