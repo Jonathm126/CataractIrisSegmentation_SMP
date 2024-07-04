@@ -1,0 +1,14 @@
+config:
+  ARCH: Unet
+  AUX_PARAMS:
+    dropout: 0.5
+  CLASSES:
+  - pupil
+  ENCODER: efficientnet-b2
+  ENCODER_WEIGHTS: imagenet
+  IN_CH: 3
+  LOSS: DiceLoss
+  LR: 5.0e-05
+  MODE: train
+  NAME: Unet_efficientnet-b2_pretrained_Tv1_DiceLoss
+  NUM_EPOCHS: 30

@@ -1,0 +1,19 @@
+{
+    "NAME": "Unet_efficientnet-b2_pretrained_Tv1_DiceLoss",
+    "MODE": "train",
+    "NUM_EPOCHS": 30,
+
+    "CLASSES": ["pupil"],
+    "IN_CH": 3,
+
+    "ARCH": "Unet",
+    "ENCODER": "efficientnet-b2",
+    "ENCODER_WEIGHTS": "imagenet",
+    "LOSS": "DiceLoss",
+
+    "LR": 0.00005, 
+
+    "AUX_PARAMS": {
+        "dropout" : 0.5
+    }
+}
