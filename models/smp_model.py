@@ -55,7 +55,9 @@ class CatSegModel(pl.LightningModule):
         # for image segmentation dice loss could be the best first choice unless other specified
         try:
             loss_fn_name = config.get('LOSS', 'DiceLoss')
-            self.loss_fn = getattr(smp.losses, loss_fn_name)(smp.losses.BINARY_MODE)
+            if hasattr(smp.losses, loss_fn_name):
+                self.loss_fn = getattr(smp.losses, loss_fn_name)(smp.losses.BINARY_MODE)
+            elif 
         except: raise ValueError(f"Improper loss function defined.")
 
     def forward(self, image):
