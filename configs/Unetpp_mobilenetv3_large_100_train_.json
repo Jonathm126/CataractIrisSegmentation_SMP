@@ -1,5 +1,5 @@
 {
-    "NAME": "FPN_resnet50_pretrained",
+    "NAME": "Unetpp_mobilenetv3_large_100_pretrained",
     "MODE": "train",
     "NUM_EPOCHS": 10,
 
@@ -7,7 +7,7 @@
     "IN_CH": 3,
 
     "ARCH": "FPN",
-    "ENCODER": "resnet50",
+    "ENCODER": "timm-mobilenetv3_large_100",
     "ENCODER_WEIGHTS": "imagenet",
     "LOSS": "DiceLoss"
 }
