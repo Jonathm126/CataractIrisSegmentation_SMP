@@ -1,6 +1,6 @@
 # torch lightning
 from pytorch_lightning import Trainer
-from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from pytorch_lightning.loggers import CSVLogger
 import torch
 from helper_utils import display_utils
@@ -25,6 +25,14 @@ def build_trainer(config, paths):
         save_top_k=1,  # save only the best model
         mode='min'  # save the model with minimum validation loss
     )
+    
+    # Create an EarlyStopping callback to stop training when the monitored metric stops improving
+    early_stopping_callback = EarlyStopping(
+        monitor='valid_dataset_loss',  # the metric to monitor
+        min_delta=0.001,  # minimum change in the monitored metric to qualify as improvement
+        patience=5,  # number of epochs with no improvement after which training will be stopped
+        mode='min'  # mode of the monitored metric (minimize loss)
+    )
 
     # create a trainer
     trainer = Trainer(
@@ -32,7 +40,7 @@ def build_trainer(config, paths):
         devices=1,
         max_epochs=config.get('NUM_EPOCHS', 10),
         enable_progress_bar=True,
-        callbacks=[checkpoint_callback],  
+        callbacks=[checkpoint_callback, early_stopping_callback],  
         logger = csv_logger
     )
     return trainer, csv_logger

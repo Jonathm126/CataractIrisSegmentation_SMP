@@ -42,7 +42,7 @@ class CatSegModel(pl.LightningModule):
                 **kwargs
             )
         except: raise ValueError(f"Error creating model with given configuration.")
-
+        
         # preprocessing parameters for image
         # we get the same preprocessing params used in the training of the encoder
         params = smp.encoders.get_preprocessing_params(config['ENCODER'])
@@ -78,7 +78,7 @@ class CatSegModel(pl.LightningModule):
             pred_mask = (prob_mask > 0.5).float()
             
         return pred_mask
-    
+        
     def shared_step(self, batch, stage):
         image, mask = batch
         

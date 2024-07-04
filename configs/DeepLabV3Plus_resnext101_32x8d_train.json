@@ -1,14 +1,14 @@
 {
-    "NAME": "Unetpp_resnext50_32x4d_pretrained_Tv1_DiceLoss",
+    "NAME": "DeepLabV3Plus_resnext101_32x8d_pretrained_Tv1_DiceLoss",
     "MODE": "train",
     "NUM_EPOCHS": 30,
 
     "CLASSES": ["pupil"],
     "IN_CH": 3,
 
-    "ARCH": "UnetPlusPlus",
-    "ENCODER": "resnext50_32x4d",
-    "ENCODER_WEIGHTS": "imagenet",
+    "ARCH": "DeepLabV3Plus",
+    "ENCODER": "resnext101_32x8d",
+    "ENCODER_WEIGHTS": "swsl",
     "LOSS": "DiceLoss",
 
     "LR": 0.0001, 
