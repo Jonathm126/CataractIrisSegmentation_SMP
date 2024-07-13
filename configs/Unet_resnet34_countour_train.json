@@ -1,0 +1,15 @@
+{
+    "NAME": "Unet_resnet34_pretrained_Tv1_CountourDiceLoss",
+    "MODE": "train",
+    "NUM_EPOCHS": 30,
+
+    "CLASSES": ["pupil"],
+    "IN_CH": 3,
+
+    "ARCH": "Unet",
+    "ENCODER": "resnet34",
+    "ENCODER_WEIGHTS": "imagenet",
+    "LOSS": "CountourDiceLoss",
+
+    "LR": 0.00005
+}

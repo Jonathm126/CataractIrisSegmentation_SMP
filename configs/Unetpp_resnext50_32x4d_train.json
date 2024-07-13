@@ -11,9 +11,5 @@
     "ENCODER_WEIGHTS": "imagenet",
     "LOSS": "DiceLoss",
 
-    "LR": 0.0001, 
-
-    "AUX_PARAMS": {
-        "dropout" : 0.5
-    }
+    "LR": 0.0001
 }

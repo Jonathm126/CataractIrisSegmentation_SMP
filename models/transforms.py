@@ -20,9 +20,9 @@ data_transforms_v1['train'] = T.Compose([
     T.ToImage(),
     T.RandomVerticalFlip(p=0.5),
     T.RandomHorizontalFlip(p=0.5),
-    T.RandomResizedCrop(size=640, scale=(0.7, 1.1)),#, fill={Image: 127, Mask: 0}),
     CustomPerspective(distortion_scale = 0.2, p = 0.6, fill = {Image:[0, 0, 0], Mask: 0}),
-    T.CenterCrop(640),
+    T.CenterCrop(620),
+    T.RandomResizedCrop(size=640, scale=(0.7, 1.1)),#, fill={Image: 127, Mask: 0}),
     T.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.1)
     #T.ToDtype(torch.float32, scale=True)
 ])

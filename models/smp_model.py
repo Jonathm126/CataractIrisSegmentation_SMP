@@ -8,9 +8,8 @@ import pytorch_lightning as pl
 # segmentation models
 import segmentation_models_pytorch as smp
 
-# utils
-import os
-from datetime import datetime
+# loss functions
+from models.dice_edge_loss import contour_dice_loss
 
 # custom utils
 from helper_utils.display_utils import display_for_epoch
@@ -57,8 +56,10 @@ class CatSegModel(pl.LightningModule):
             loss_fn_name = config.get('LOSS', 'DiceLoss')
             if hasattr(smp.losses, loss_fn_name):
                 self.loss_fn = getattr(smp.losses, loss_fn_name)(smp.losses.BINARY_MODE)
-            elif 
-        except: raise ValueError(f"Improper loss function defined.")
+            elif loss_fn_name == 'CountourDiceLoss':
+                self.loss_fn = contour_dice_loss
+            else:raise ValueError(f"Unknown loss function defined.")
+        except: raise ValueError(f"Cannot define loss function.")
 
     def forward(self, image):
         # normalize image here
