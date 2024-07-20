@@ -9,5 +9,7 @@
     "ARCH": "FPN",
     "ENCODER": "resnet50",
     "ENCODER_WEIGHTS": "imagenet",
-    "LOSS": "DiceLoss"
+    "LOSS": "DiceLoss",
+
+    "LR": 0.000005
 }

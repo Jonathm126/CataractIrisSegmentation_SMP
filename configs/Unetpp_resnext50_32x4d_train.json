@@ -1,5 +1,5 @@
 {
-    "NAME": "Unetpp_resnext50_32x4d_pretrained_Tv1_DiceLoss",
+    "NAME": "Unetpp_resnext50_32x4d_pretrained_Tv0_DiceLoss",
     "MODE": "train",
     "NUM_EPOCHS": 30,
 

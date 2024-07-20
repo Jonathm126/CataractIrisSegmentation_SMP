@@ -3,5 +3,5 @@
     "train_data_root": "H:\\Cataract Dataset\\FSR Dataset\\Yolo_Segmentation_640x640",
     "inference_data_root": "H:\\Cataract Dataset\\FSR Dataset\\Ori_youtube_20",
     "inference_save_path": "H:\\Cataract Dataset\\FSR Dataset\\Ori_youtube_20_infer",
-    "checkpoint_path": "D:\\OneDrive\\personal onedrive\\OneDrive\\MSc in Data Science\\24 Spring\\Healthcare AI\\Final Project\\Model Chekpoints"
+    "checkpoint_path": "H:\\Cataract Dataset\\Model Checkpoints"
 }

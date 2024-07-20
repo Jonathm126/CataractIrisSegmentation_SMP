@@ -1,0 +1,4 @@
+{
+    "NAME": "Unet_resnet34_pretrained_Tv1_CountourDiceLoss",
+    "MODE": "load"
+}

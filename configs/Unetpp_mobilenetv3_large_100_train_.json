@@ -6,8 +6,10 @@
     "CLASSES": ["pupil"],
     "IN_CH": 3,
 
-    "ARCH": "FPN",
+    "ARCH": "UnetPlusPlus",
     "ENCODER": "timm-mobilenetv3_large_100",
     "ENCODER_WEIGHTS": "imagenet",
-    "LOSS": "DiceLoss"
+    "LOSS": "DiceLoss",
+
+    "LR": 0.00005
 }
