@@ -1,4 +1,4 @@
 {
-    "NAME": "Unet_efficientnet-b3_pretrained_DiceLoss",
+    "NAME": "Unet_efficientnet-b3_pretrained_Tv0_DiceLoss",
     "MODE": "load"
 }

@@ -21,9 +21,6 @@ def load_configs(config_name, paths_path):
     paths['log_path'] = os.path.join(paths['log_path'], config['NAME'])
     paths['inference_save_path'] = os.path.join(paths['inference_save_path'],config['NAME'])
     
-    # torch setup
-    os.environ['TORCH_HOME'] = 'models/torch'
-    
     # print the configs
     df = pd.DataFrame(list(config.items()), columns=['Key', 'Value'])
     ipy_display(df)

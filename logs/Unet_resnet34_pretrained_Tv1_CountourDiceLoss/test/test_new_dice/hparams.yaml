@@ -1,0 +1,12 @@
+config:
+  ARCH: Unet
+  CLASSES:
+  - pupil
+  ENCODER: resnet34
+  ENCODER_WEIGHTS: imagenet
+  IN_CH: 3
+  LOSS: CountourDiceLoss
+  LR: 0.0001
+  MODE: train
+  NAME: Unet_resnet34_pretrained_Tv1_CountourDiceLoss
+  NUM_EPOCHS: 30
