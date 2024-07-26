@@ -4,6 +4,7 @@ import torch.utils
 import torch.utils.benchmark
 import torch.utils.data
 import pytorch_lightning as pl
+import time
 
 # segmentation models
 import segmentation_models_pytorch as smp
@@ -62,6 +63,7 @@ class CatSegModel(pl.LightningModule):
         except: raise ValueError(f"Cannot define loss function.")
 
     def forward(self, image):
+        
         # normalize image here
         image = (image - self.mean) / self.std
         mask = self.model(image)
@@ -71,16 +73,18 @@ class CatSegModel(pl.LightningModule):
         # assertion
         h,w = image.shape[-2:]
         assert h%32==0 and w%32==0
-        
-        with torch.no_grad():
+                
+        t = time.perf_counter()
+        #with torch.no_grad():
             # do a step
-            logits_mask = self(image)
+        logits_mask = self(image)
+        
+        # apply thresholding
+        prob_mask = logits_mask.sigmoid()
+        pred_mask = (prob_mask > 0.5).float()
             
-            # apply thresholding
-            prob_mask = logits_mask.sigmoid()
-            pred_mask = (prob_mask > 0.5).float()
-            
-        return pred_mask
+        print(time.perf_counter()-t)
+        return pred_mask, time
         
     def shared_step(self, batch, stage):
         image, mask = batch
