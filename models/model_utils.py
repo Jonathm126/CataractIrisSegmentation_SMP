@@ -81,7 +81,8 @@ def infer_set(model, device, pth, dataset, save=False, to_print=None, time=False
             if time:
                 starter.record()
             # predict
-            pred_mask = pred_mask = model.infer(img).squeeze(0).squeeze(0)
+            pred_mask, _ = model.infer(img)
+            pred_mask = pred_mask.squeeze(0).squeeze(0)
             # time after prediction
             if time:
                 ender.record()

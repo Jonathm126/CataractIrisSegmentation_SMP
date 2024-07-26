@@ -83,8 +83,9 @@ class CatSegModel(pl.LightningModule):
         prob_mask = logits_mask.sigmoid()
         pred_mask = (prob_mask > 0.5).float()
             
-        print(time.perf_counter()-t)
-        return pred_mask, time
+        tt = time.perf_counter()-t
+        print(tt)
+        return pred_mask, tt
         
     def shared_step(self, batch, stage):
         image, mask = batch
