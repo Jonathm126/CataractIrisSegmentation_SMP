@@ -1,4 +1,4 @@
 {
-    "NAME": "Unet_resnet34_pretrained_Tv0_DiceLoss",
+    "NAME": "Unet_resnet34_pretrained_Tv1_DiceLoss",
     "MODE": "load"
 }
