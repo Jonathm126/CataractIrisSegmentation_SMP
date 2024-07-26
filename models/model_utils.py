@@ -56,12 +56,6 @@ def infer_set(model, device, pth, dataset, save=False, to_print=None, time=False
     
     # prep for time measurement
     if time:
-        # cuda timing
-        starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
-        # warmup
-        dummy_input = torch.randn(1,3,640,640, dtype=torch.float).to(device)
-        for _ in range(10):
-            _ = model(dummy_input)
         timings = []
     
     # inference loop
@@ -77,19 +71,13 @@ def infer_set(model, device, pth, dataset, save=False, to_print=None, time=False
                 gt_mask = None
             # cuda
             img = img.to(device)
-            # time if needed
-            if time:
-                starter.record()
             # predict
-            pred_mask, _ = model.infer(img)
-            pred_mask = pred_mask.squeeze(0).squeeze(0)
+            pred_mask, curr_time = model.infer(img, time=time)
             # time after prediction
             if time:
-                ender.record()
-                torch.cuda.synchronize()
-                curr_time = starter.elapsed_time(ender)
                 timings.append(curr_time)
             # move to cpu for post processing
+            pred_mask = pred_mask.squeeze(0).squeeze(0)
             pred_mask = pred_mask.cpu()
             # save if needed
             if save:

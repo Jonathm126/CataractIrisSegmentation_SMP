@@ -4,7 +4,6 @@ import torch.utils
 import torch.utils.benchmark
 import torch.utils.data
 import pytorch_lightning as pl
-import time
 
 # segmentation models
 import segmentation_models_pytorch as smp
@@ -69,12 +68,16 @@ class CatSegModel(pl.LightningModule):
         mask = self.model(image)
         return mask
     
-    def infer(self,image):
+    def infer(self,image, time=False):
         # assertion
         h,w = image.shape[-2:]
         assert h%32==0 and w%32==0
                 
-        t = time.perf_counter()
+        # cuda timing
+        if time:
+            starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+            starter.record()
+        
         #with torch.no_grad():
             # do a step
         logits_mask = self(image)
@@ -82,11 +85,18 @@ class CatSegModel(pl.LightningModule):
         # apply thresholding
         prob_mask = logits_mask.sigmoid()
         pred_mask = (prob_mask > 0.5).float()
-            
-        tt = time.perf_counter()-t
-        print(tt)
-        return pred_mask, tt
         
+        # timing
+        if time:
+            ender.record()
+            torch.cuda.synchronize()
+            curr_time = starter.elapsed_time(ender)
+        
+        else:
+            curr_time = None
+        
+        return pred_mask, curr_time
+
     def shared_step(self, batch, stage):
         image, mask = batch
         
