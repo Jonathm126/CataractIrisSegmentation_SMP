@@ -138,7 +138,7 @@ if __name__ == "__main__":
 
     # CONFIGURE HERE
     run_params.config_name = "Unet_efficientnet-b3_load.json" # Name of model configuration file to load
-    run_params.paths_name = 'paths_pc.json' # Name of paths configuration file
+    run_params.paths_name = 'paths_drive.json' # Name of paths configuration file
     
     # Training
     run_params.test_images = 0 # How many test images to print to make sure data was loaded
